@@ -12,7 +12,6 @@ import {
   FaShareAlt,
 } from "react-icons/fa";
 import { BsDownload } from "react-icons/bs";
-
 function MusicPlayer({ song, imgSrc, auto }) {
   const [isLove, setLove] = useState(false);
   const [isPlaying, setPlay] = useState(false);
@@ -87,7 +86,8 @@ function MusicPlayer({ song, imgSrc, auto }) {
   };
 
   return (
-    <div className="musicPlayer">
+    <div className="musicPlayerWrapper">
+    <div className="musicPlayer"  style={{ overflow: 'auto', maxHeight: '1000px' }}>
       <div className="songImage">
         <img src={imgSrc} alt="" />
       </div>
@@ -166,6 +166,7 @@ function MusicPlayer({ song, imgSrc, auto }) {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

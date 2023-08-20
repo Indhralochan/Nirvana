@@ -4,9 +4,10 @@ const axios = require('axios');
 const bodyParser = require("body-parser");
 const path = require("path");
 app.use(express.static(path.join(__dirname, "/public")));
-
+const cors = require('cors')
+app.use(cors())
 //V2 Artist details
-app.post('/:artistId', async (request, response) => {
+app.get('/:artistId', async (request, response) => {
     const options = {
         method: 'GET',
         url: 'https://shazam-core.p.rapidapi.com/v2/artists/details',
@@ -30,7 +31,7 @@ app.post('/:artistId', async (request, response) => {
 }
 )
 //Multi search
-app.post('/:type/:query', async (request, response) => {
+app.get('/:type/:query', async (request, response) => {
     const options = {
         method: 'GET',
         url: 'https://shazam-core.p.rapidapi.com/v1/search/multi',
@@ -54,7 +55,7 @@ app.post('/:type/:query', async (request, response) => {
     } showData()
 })
 //Search suggest
-app.post('/:SingleArtist', async (request, response) => {
+app.get('/:SingleArtist', async (request, response) => {
     const axios = require('axios');
 
     const options = {
@@ -77,7 +78,7 @@ app.post('/:SingleArtist', async (request, response) => {
     } showData()
 })
 //V2 Track Details
-app.post('/track/:trackId', async (request, response) => {
+app.get('/track/:trackId', async (request, response) => {
     const options = {
         method: 'GET',
         url: 'https://shazam-core.p.rapidapi.com/v2/tracks/details',
@@ -100,7 +101,7 @@ app.post('/track/:trackId', async (request, response) => {
     } showData()
 })
 //Track Similarities
-app.post('/track/trackSimilarity/:trackId', async (request, response) => {
+app.get('/track/trackSimilarity/:trackId', async (request, response) => {
     const options = {
         method: 'GET',
         url: 'https://shazam-core.p.rapidapi.com/v1/tracks/similarities',
@@ -121,7 +122,7 @@ app.post('/track/trackSimilarity/:trackId', async (request, response) => {
     } showData()
 })
 //Tracks Related
-app.post("/track/related/:trackId", async (request, response) => {
+app.get("/track/related/:trackId", async (request, response) => {
     const axios = require('axios');
 
     const options = {
@@ -147,7 +148,7 @@ app.post("/track/related/:trackId", async (request, response) => {
     } showData()
 })
 //Country Most popular 
-app.post("/", async (request, response) => {
+app.get("/", async (request, response) => {
     const options = {
         method: 'GET',
         url: 'https://shazam-core.p.rapidapi.com/v1/charts/country',
@@ -160,15 +161,27 @@ app.post("/", async (request, response) => {
     async function showData() {
         try {
             const resp = await axios.request(options);
-            //console.log(resp.data);
-            return response.json(resp.data)
-        } catch (error) {
-            console.error(error);
+            const tracks = resp.data.map(track => {
+                const coverartImage = track.images && track.images.coverart ? track.images.coverart : 'DEFAULT_IMAGE_URL';
+                const playableAction = track.hub.actions? track.hub.actions[1].uri : 'no link';
+                return [
+                     track.title || 'Unknown Title',
+                     coverartImage,
+                     playableAction
+                ];
+            });
+            console.log(tracks)
+            return response.json(tracks);
         }
-    } showData()
+        catch (error) {
+            console.error('Error fetching data:', error);
+            return response.status(500).json({ error: 'Internal server error' });
+        }
+    }
+    showData()
 })
 // Top world Charts based on genre
-app.post('/charts/:genre', async (request, response) => {
+app.get('/charts/:genre', async (request, response) => {
     const axios = require('axios');
 
     const options = {
@@ -191,7 +204,7 @@ app.post('/charts/:genre', async (request, response) => {
     } showData()
 })
 // chart by country and genre
-app.post("/chart/:genre/:country", async (request, response) => {
+app.get("/chart/:genre/:country", async (request, response) => {
     const options = {
         method: 'GET',
         url: 'https://shazam-core.p.rapidapi.com/v1/charts/genre-country',

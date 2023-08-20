@@ -311,3 +311,13 @@
     margin: 25px 0;
   }
 }
+.container {
+  width: 100%;
+  padding: 20px;
+  overflow-y: auto; /* Enable vertical scrolling */
+  max-height: 600px; /* Adjust the maximum height as needed */
+}
+
+.song-list {
+  margin-top: 10px;
+}
